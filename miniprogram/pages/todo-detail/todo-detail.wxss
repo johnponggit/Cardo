@@ -1,0 +1,282 @@
+/* pages/todo-detail/todo-detail.wxss */
+
+.container {
+  padding: 20rpx;
+  padding-bottom: 200rpx;
+}
+
+.form-item {
+  background-color: #FFFFFF;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 16rpx;
+}
+
+.required {
+  color: #FF4D4F;
+}
+
+.input {
+  width: 100%;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.link-input {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.btn-paste {
+  flex-shrink: 0;
+  background-color: #E8F2FC;
+  color: #4A90D9;
+  border: none;
+  font-size: 26rpx;
+}
+
+.link-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F5F5F5;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-top: 16rpx;
+}
+
+.preview-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 12rpx;
+}
+
+.preview-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.preview-title {
+  font-size: 26rpx;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-url {
+  font-size: 22rpx;
+  color: #999999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-open {
+  flex-shrink: 0;
+  background-color: #4A90D9;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  margin-left: 16rpx;
+}
+
+.picker-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F5F5F5;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.6;
+}
+
+.status-options {
+  display: flex;
+  gap: 16rpx;
+}
+
+.status-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+.status-option.active {
+  background-color: #E8F2FC;
+  color: #4A90D9;
+}
+
+.status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.status-dot.pending {
+  background-color: #999999;
+}
+
+.status-dot.doing {
+  background-color: #4A90D9;
+}
+
+.status-dot.done {
+  background-color: #52C41A;
+}
+
+.priority-options {
+  display: flex;
+  gap: 16rpx;
+}
+
+.priority-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+.priority-option.active {
+  color: #FFFFFF;
+}
+
+.priority-option.active.high {
+  background-color: #FF4D4F;
+}
+
+.priority-option.active.medium {
+  background-color: #FAAD14;
+}
+
+.priority-option.active.low {
+  background-color: #52C41A;
+}
+
+.priority-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 150rpx;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.card-link {
+  display: flex;
+  align-items: center;
+  background-color: #E8F2FC;
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+
+.card-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+}
+
+.card-link text {
+  color: #4A90D9;
+  font-size: 28rpx;
+}
+
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.btn-delete {
+  flex: 1;
+  background-color: #FFFFFF;
+  color: #FF4D4F;
+  border: 2rpx solid #FF4D4F;
+  font-size: 28rpx;
+}
+
+.btn-submit {
+  flex: 2;
+  background-color: #4A90D9;
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.create-card-section {
+  margin-top: 40rpx;
+}
+
+.divider-text {
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.divider-text text {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.btn-create-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #52C41A;
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.btn-create-card image {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+}

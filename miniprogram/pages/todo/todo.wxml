@@ -1,0 +1,81 @@
+<!-- pages/todo/todo.wxml -->
+<view class="container">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view
+        class="filter-tab {{currentStatus === '' ? 'active' : ''}}"
+        bindtap="onStatusChange"
+        data-status="">全部</view>
+      <view
+        class="filter-tab {{currentStatus === 'pending' ? 'active' : ''}}"
+        bindtap="onStatusChange"
+        data-status="pending">待处理</view>
+      <view
+        class="filter-tab {{currentStatus === 'doing' ? 'active' : ''}}"
+        bindtap="onStatusChange"
+        data-status="doing">进行中</view>
+      <view
+        class="filter-tab {{currentStatus === 'done' ? 'active' : ''}}"
+        bindtap="onStatusChange"
+        data-status="done">已完成</view>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view
+        class="category-item {{currentCategory === '' ? 'active' : ''}}"
+        bindtap="onCategoryChange"
+        data-category="">全部</view>
+      <view
+        wx:for="{{categories}}"
+        wx:key="*this"
+        class="category-item {{currentCategory === item ? 'active' : ''}}"
+        bindtap="onCategoryChange"
+        data-category="{{item}}">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <scroll-view
+    class="todo-list"
+    scroll-y
+    enhanced
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    bindscrolltolower="onLoadMore">
+
+    <block wx:for="{{todos}}" wx:key="_id">
+      <todo-item
+        item="{{item}}"
+        bind:tap="onTodoTap"
+        bind:check="onTodoCheck"
+        bind:edit="onTodoEdit"
+        bind:delete="onTodoDelete" />
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && todos.length === 0}}">
+      <image src="/images/empty-todo.png" mode="aspectFit" />
+      <text>暂无待办事项</text>
+      <text class="empty-hint">点击右下角按钮添加新待办</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="load-more" wx:elif="{{noMore && todos.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+  </scroll-view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="onAdd">
+    <image src="/images/add.png" mode="aspectFit" />
+  </view>
+</view>

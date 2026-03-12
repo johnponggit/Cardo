@@ -1,0 +1,85 @@
+<!-- pages/card/card.wxml -->
+<view class="container">
+  <!-- 标签筛选 -->
+  <scroll-view class="tag-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="tag-list">
+      <view
+        class="tag-item {{currentTag === '' ? 'active' : ''}}"
+        bindtap="onTagChange"
+        data-tag="">全部</view>
+      <view
+        wx:for="{{tags}}"
+        wx:key="*this"
+        class="tag-item {{currentTag === item ? 'active' : ''}}"
+        bindtap="onTagChange"
+        data-tag="{{item}}">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 统计信息 -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.total}}</text>
+      <text class="stat-label">总卡片</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value due">{{stats.dueToday}}</text>
+      <text class="stat-label">今日待复习</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value new">{{stats.newCards}}</text>
+      <text class="stat-label">新卡片</text>
+    </view>
+  </view>
+
+  <!-- 复习入口 -->
+  <view class="review-entry" wx:if="{{stats.dueToday > 0}}" bindtap="onStartReview">
+    <view class="review-info">
+      <image src="/images/review.png" class="review-icon" mode="aspectFit" />
+      <view class="review-text">
+        <text class="review-title">开始今日复习</text>
+        <text class="review-desc">有 {{stats.dueToday}} 张卡片等待复习</text>
+      </view>
+    </view>
+    <image src="/images/arrow-right.png" class="arrow-icon" mode="aspectFit" />
+  </view>
+
+  <!-- 卡片列表 -->
+  <scroll-view
+    class="card-list"
+    scroll-y
+    enhanced
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    bindscrolltolower="onLoadMore">
+
+    <block wx:for="{{cards}}" wx:key="_id">
+      <card-item
+        item="{{item}}"
+        bind:tap="onCardTap"
+        bind:edit="onCardEdit"
+        bind:delete="onCardDelete" />
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && cards.length === 0}}">
+      <image src="/images/empty-card.png" mode="aspectFit" />
+      <text>暂无知识卡片</text>
+      <text class="empty-hint">点击右下角按钮添加新卡片</text>
+    </view>
+
+    <view class="load-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="load-more" wx:elif="{{noMore && cards.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+  </scroll-view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="onAdd">
+    <image src="/images/add.png" mode="aspectFit" />
+  </view>
+</view>

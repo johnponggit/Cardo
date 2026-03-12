@@ -1,0 +1,98 @@
+<!-- pages/card-detail/card-detail.wxml -->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <!-- 正面（问题） -->
+    <view class="form-item">
+      <view class="form-label">问题 <text class="required">*</text></view>
+      <textarea
+        class="textarea"
+        name="front"
+        value="{{card.front}}"
+        placeholder="输入问题或知识点..."
+        maxlength="1000"
+        auto-height />
+    </view>
+
+    <!-- 背面（答案） -->
+    <view class="form-item">
+      <view class="form-label">答案 <text class="required">*</text></view>
+      <textarea
+        class="textarea answer"
+        name="back"
+        value="{{card.back}}"
+        placeholder="输入答案或详细说明..."
+        maxlength="2000"
+        auto-height />
+    </view>
+
+    <!-- 标签 -->
+    <view class="form-item">
+      <view class="form-label">标签</view>
+      <view class="tags-input">
+        <view class="tags-list">
+          <view class="tag-item" wx:for="{{card.tags}}" wx:key="*this">
+            <text>{{item}}</text>
+            <image src="/images/close.png" class="tag-remove" catchtap="onRemoveTag" data-index="{{index}}" mode="aspectFit" />
+          </view>
+        </view>
+        <input
+          class="tag-input"
+          placeholder="输入标签后回车"
+          value="{{tagInput}}"
+          bindinput="onTagInput"
+          bindconfirm="onAddTag" />
+      </view>
+      <view class="tag-suggestions" wx:if="{{suggestedTags.length > 0}}">
+        <text class="suggestion-label">常用标签：</text>
+        <view class="suggestion-list">
+          <text
+            class="suggestion-tag"
+            wx:for="{{suggestedTags}}"
+            wx:key="*this"
+            catchtap="onSelectTag"
+            data-tag="{{item}}">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 来源 -->
+    <view class="form-item" wx:if="{{fromTodo}}">
+      <view class="form-label">来源</view>
+      <view class="source-info">
+        <image src="/images/todo-small.png" class="source-icon" mode="aspectFit" />
+        <text>{{fromTodoTitle}}</text>
+      </view>
+    </view>
+
+    <!-- 复习信息 -->
+    <view class="form-item" wx:if="{{cardId && card.repetitions !== undefined}}">
+      <view class="form-label">复习进度</view>
+      <view class="review-info">
+        <view class="info-row">
+          <text class="info-label">复习次数</text>
+          <text class="info-value">{{card.repetitions || 0}} 次</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">难度因子</text>
+          <text class="info-value">{{card.easeFactor || 2.5}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">下次复习</text>
+          <text class="info-value">{{nextReviewText}}</text>
+        </view>
+        <view class="progress-bar-container">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{progress}}%"></view>
+          </view>
+          <text class="progress-level">{{level}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="form-actions">
+      <button class="btn-delete" wx:if="{{cardId}}" bindtap="onDelete">删除</button>
+      <button class="btn-submit" form-type="submit">{{cardId ? '保存' : '创建'}}</button>
+    </view>
+  </form>
+</view>

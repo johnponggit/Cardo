@@ -1,0 +1,149 @@
+<!-- pages/todo-detail/todo-detail.wxml -->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <!-- 标题 -->
+    <view class="form-item">
+      <view class="form-label">标题 <text class="required">*</text></view>
+      <input
+        class="input"
+        name="title"
+        value="{{todo.title}}"
+        placeholder="请输入待办标题"
+        maxlength="100"
+        bindinput="onTitleInput" />
+    </view>
+
+    <!-- 链接 -->
+    <view class="form-item">
+      <view class="form-label">链接</view>
+      <view class="link-input">
+        <input
+          class="input flex-1"
+          name="link"
+          value="{{todo.link}}"
+          placeholder="粘贴链接（可选）"
+          bindblur="onLinkBlur" />
+        <button class="btn-paste" bindtap="onPaste" size="mini">粘贴</button>
+      </view>
+      <view class="link-preview" wx:if="{{todo.link}}">
+        <view class="preview-content">
+          <image src="/images/link.png" class="preview-icon" mode="aspectFit" />
+          <view class="preview-text">
+            <text class="preview-title">{{linkTitle || '外部链接'}}</text>
+            <text class="preview-url">{{todo.link}}</text>
+          </view>
+        </view>
+        <button class="btn-open" bindtap="onOpenLink" size="mini">打开</button>
+      </view>
+    </view>
+
+    <!-- 分类 -->
+    <view class="form-item">
+      <view class="form-label">分类</view>
+      <picker
+        name="category"
+        value="{{categoryIndex}}"
+        range="{{categories}}"
+        bindchange="onCategoryChange">
+        <view class="picker-value">
+          {{todo.category || '请选择分类'}}
+          <image src="/images/arrow-right.png" class="arrow-icon" mode="aspectFit" />
+        </view>
+      </picker>
+    </view>
+
+    <!-- 状态 -->
+    <view class="form-item">
+      <view class="form-label">状态</view>
+      <view class="status-options">
+        <view
+          class="status-option {{todo.status === 'pending' ? 'active' : ''}}"
+          bindtap="onStatusChange"
+          data-status="pending">
+          <view class="status-dot pending"></view>
+          <text>待处理</text>
+        </view>
+        <view
+          class="status-option {{todo.status === 'doing' ? 'active' : ''}}"
+          bindtap="onStatusChange"
+          data-status="doing">
+          <view class="status-dot doing"></view>
+          <text>进行中</text>
+        </view>
+        <view
+          class="status-option {{todo.status === 'done' ? 'active' : ''}}"
+          bindtap="onStatusChange"
+          data-status="done">
+          <view class="status-dot done"></view>
+          <text>已完成</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 优先级 -->
+    <view class="form-item">
+      <view class="form-label">优先级</view>
+      <view class="priority-options">
+        <view
+          class="priority-option {{todo.priority === 1 ? 'active high' : ''}}"
+          bindtap="onPriorityChange"
+          data-priority="1">
+          <view class="priority-dot"></view>
+          <text>高</text>
+        </view>
+        <view
+          class="priority-option {{todo.priority === 2 ? 'active medium' : ''}}"
+          bindtap="onPriorityChange"
+          data-priority="2">
+          <view class="priority-dot"></view>
+          <text>中</text>
+        </view>
+        <view
+          class="priority-option {{todo.priority === 3 ? 'active low' : ''}}"
+          bindtap="onPriorityChange"
+          data-priority="3">
+          <view class="priority-dot"></view>
+          <text>低</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-item">
+      <view class="form-label">备注</view>
+      <textarea
+        class="textarea"
+        name="notes"
+        value="{{todo.notes}}"
+        placeholder="添加备注信息..."
+        maxlength="500"
+        auto-height />
+    </view>
+
+    <!-- 关联卡片 -->
+    <view class="form-item" wx:if="{{todo.linkedCardId}}">
+      <view class="form-label">关联卡片</view>
+      <view class="card-link" bindtap="onViewCard">
+        <image src="/images/card-small.png" class="card-icon" mode="aspectFit" />
+        <text>查看关联的知识卡片</text>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="form-actions">
+      <button class="btn-delete" wx:if="{{todoId}}" bindtap="onDelete">删除</button>
+      <button class="btn-submit" form-type="submit">{{todoId ? '保存' : '创建'}}</button>
+    </view>
+
+    <!-- 创建卡片按钮 -->
+    <view class="create-card-section" wx:if="{{todoId && todo.status === 'done' && !todo.linkedCardId}}">
+      <view class="divider-text">
+        <text>完成待办后，生成知识点卡片</text>
+      </view>
+      <button class="btn-create-card" bindtap="onCreateCard">
+        <image src="/images/card-small.png" mode="aspectFit" />
+        <text>生成知识卡片</text>
+      </button>
+    </view>
+  </form>
+</view>

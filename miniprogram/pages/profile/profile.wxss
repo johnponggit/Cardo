@@ -1,0 +1,132 @@
+/* pages/profile/profile.wxss */
+
+.container {
+  padding: 20rpx;
+  padding-bottom: 100rpx;
+  background-color: #F5F5F5;
+  min-height: 100vh;
+}
+
+.user-section {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  background-color: #E8E8E8;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.stats-section {
+  margin-bottom: 20rpx;
+}
+
+.stats-card {
+  display: flex;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.stats-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-value {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #4A90D9;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 8rpx;
+}
+
+.stats-divider {
+  width: 1rpx;
+  background-color: #E8E8E8;
+  margin: 0 20rpx;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.menu-group {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 16rpx;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333333;
+}
+
+.menu-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.6;
+}
+
+.version {
+  text-align: center;
+  margin-top: 40rpx;
+}
+
+.version text {
+  font-size: 24rpx;
+  color: #999999;
+}

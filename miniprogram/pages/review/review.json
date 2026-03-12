@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "复习卡片",
+  "usingComponents": {
+    "review-card": "/components/review-card/review-card"
+  }
+}

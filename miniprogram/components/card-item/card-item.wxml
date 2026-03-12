@@ -1,0 +1,24 @@
+<!-- components/card-item/card-item.wxml -->
+<view class="card-item" bindtap="onTap">
+  <view class="card-front">
+    <text class="front-text">{{item.front}}</text>
+  </view>
+
+  <view class="card-meta">
+    <view class="card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+      <text class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+    <text class="card-status">{{statusText}}</text>
+  </view>
+
+  <view class="card-progress">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progress}}%"></view>
+    </view>
+    <text class="progress-text">{{level}}</text>
+  </view>
+
+  <view class="card-actions" catchtap="preventPropagation">
+    <image src="/images/more.png" class="action-btn" catchtap="onMore" />
+  </view>
+</view>

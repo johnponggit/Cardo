@@ -1,0 +1,115 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <!-- 欢迎区 -->
+  <view class="welcome-section">
+    <text class="greeting">{{greeting}}</text>
+    <text class="date">{{dateText}}</text>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <!-- 待办统计 -->
+    <view class="stat-card todo-stat" bindtap="goToTodo">
+      <view class="stat-header">
+        <image src="/images/todo-white.png" class="stat-icon" mode="aspectFit" />
+        <text class="stat-title">待办事项</text>
+      </view>
+      <view class="stat-body">
+        <view class="stat-item">
+          <text class="stat-value">{{todoStats.pending}}</text>
+          <text class="stat-label">待处理</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value doing">{{todoStats.doing}}</text>
+          <text class="stat-label">进行中</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value done">{{todoStats.done}}</text>
+          <text class="stat-label">已完成</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 卡片统计 -->
+    <view class="stat-card card-stat" bindtap="goToCard">
+      <view class="stat-header">
+        <image src="/images/card-white.png" class="stat-icon" mode="aspectFit" />
+        <text class="stat-title">知识卡片</text>
+      </view>
+      <view class="stat-body">
+        <view class="stat-item">
+          <text class="stat-value">{{cardStats.total}}</text>
+          <text class="stat-label">总卡片</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value due">{{cardStats.dueToday}}</text>
+          <text class="stat-label">今日复习</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value new">{{cardStats.newCards}}</text>
+          <text class="stat-label">新卡片</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 复习入口 -->
+  <view class="review-section" wx:if="{{cardStats.dueToday > 0}}">
+    <view class="review-card" bindtap="startReview">
+      <view class="review-content">
+        <image src="/images/review-white.png" class="review-icon" mode="aspectFit" />
+        <view class="review-text">
+          <text class="review-title">开始今日复习</text>
+          <text class="review-desc">有 {{cardStats.dueToday}} 张卡片等待复习</text>
+        </view>
+      </view>
+      <image src="/images/arrow-right-white.png" class="arrow-icon" mode="aspectFit" />
+    </view>
+  </view>
+
+  <!-- 近期待办 -->
+  <view class="recent-section">
+    <view class="section-header">
+      <text class="section-title">近期待办</text>
+      <text class="section-more" bindtap="goToTodo">查看全部</text>
+    </view>
+
+    <view class="recent-list" wx:if="{{recentTodos.length > 0}}">
+      <view class="recent-item" wx:for="{{recentTodos}}" wx:key="_id" bindtap="onTodoTap" data-id="{{item._id}}">
+        <view class="item-status {{item.status}}"></view>
+        <view class="item-content">
+          <text class="item-title">{{item.title}}</text>
+          <text class="item-category" wx:if="{{item.category}}">{{item.category}}</text>
+        </view>
+        <view class="item-priority priority-{{item.priority || 2}}"></view>
+      </view>
+    </view>
+
+    <view class="empty-recent" wx:else>
+      <text>暂无待办事项</text>
+      <button class="btn-add" bindtap="addTodo">添加待办</button>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="addTodo">
+      <view class="action-icon todo">
+        <image src="/images/add-todo.png" mode="aspectFit" />
+      </view>
+      <text>新建待办</text>
+    </view>
+    <view class="action-item" bindtap="addCard">
+      <view class="action-icon card">
+        <image src="/images/add-card.png" mode="aspectFit" />
+      </view>
+      <text>新建卡片</text>
+    </view>
+    <view class="action-item" bindtap="startReview" wx:if="{{cardStats.dueToday > 0}}">
+      <view class="action-icon review">
+        <image src="/images/start-review.png" mode="aspectFit" />
+      </view>
+      <text>开始复习</text>
+    </view>
+  </view>
+</view>

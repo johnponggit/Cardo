@@ -1,0 +1,61 @@
+<!-- pages/review/review.wxml -->
+<view class="container">
+  <!-- 进度条 -->
+  <view class="progress-header">
+    <view class="progress-info">
+      <text class="progress-text">复习进度: {{currentIndex + 1}} / {{cards.length}}</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(currentIndex / cards.length) * 100}}%"></view>
+    </view>
+  </view>
+
+  <!-- 卡片区域 -->
+  <view class="card-area" wx:if="{{cards.length > 0 && !finished}}">
+    <review-card
+      card="{{cards[currentIndex]}}"
+      currentIndex="{{currentIndex}}"
+      total="{{cards.length}}"
+      bind:rate="onRate" />
+  </view>
+
+  <!-- 完成状态 -->
+  <view class="finished-state" wx:if="{{finished}}">
+    <image src="/images/finish.png" class="finish-icon" mode="aspectFit" />
+    <text class="finish-title">复习完成!</text>
+    <text class="finish-desc">今日已复习 {{reviewedCount}} 张卡片</text>
+
+    <view class="result-stats">
+      <view class="result-item">
+        <text class="result-value">{{easyCount}}</text>
+        <text class="result-label">简单</text>
+      </view>
+      <view class="result-item">
+        <text class="result-value">{{goodCount}}</text>
+        <text class="result-label">良好</text>
+      </view>
+      <view class="result-item">
+        <text class="result-value">{{hardCount}}</text>
+        <text class="result-label">困难</text>
+      </view>
+      <view class="result-item">
+        <text class="result-value">{{failCount}}</text>
+        <text class="result-label">忘记</text>
+      </view>
+    </view>
+
+    <button class="btn-finish" bindtap="onFinish">完成</button>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && cards.length === 0 && !finished}}">
+    <image src="/images/empty-review.png" mode="aspectFit" />
+    <text>今日没有待复习的卡片</text>
+    <button class="btn-back" bindtap="onBack">返回</button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

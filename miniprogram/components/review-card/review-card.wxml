@@ -1,0 +1,50 @@
+<!-- components/review-card/review-card.wxml -->
+<view class="review-card">
+  <!-- 正面 -->
+  <view class="card-face front {{!showBack ? 'active' : ''}}" bindtap="onFlip">
+    <view class="card-header">
+      <text class="card-label">问题</text>
+      <text class="card-count">{{currentIndex + 1}} / {{total}}</text>
+    </view>
+    <view class="card-body">
+      <text class="card-text">{{card.front}}</text>
+    </view>
+    <view class="card-footer">
+      <text class="hint">点击查看答案</text>
+    </view>
+  </view>
+
+  <!-- 背面 -->
+  <view class="card-face back {{showBack ? 'active' : ''}}" bindtap="onFlip">
+    <view class="card-header">
+      <text class="card-label">答案</text>
+      <text class="card-count">{{currentIndex + 1}} / {{total}}</text>
+    </view>
+    <view class="card-body">
+      <text class="card-text">{{card.back}}</text>
+    </view>
+    <view class="card-footer">
+      <text class="hint">评价你的记忆质量</text>
+    </view>
+  </view>
+
+  <!-- 评分按钮 -->
+  <view class="rating-buttons {{showBack ? 'visible' : ''}}">
+    <view class="rating-btn fail" bindtap="onRate" data-quality="0">
+      <text class="rating-label">忘记</text>
+      <text class="rating-desc">完全不记得</text>
+    </view>
+    <view class="rating-btn hard" bindtap="onRate" data-quality="3">
+      <text class="rating-label">困难</text>
+      <text class="rating-desc">想起来了</text>
+    </view>
+    <view class="rating-btn good" bindtap="onRate" data-quality="4">
+      <text class="rating-label">良好</text>
+      <text class="rating-desc">有些犹豫</text>
+    </view>
+    <view class="rating-btn easy" bindtap="onRate" data-quality="5">
+      <text class="rating-label">简单</text>
+      <text class="rating-desc">轻松回忆</text>
+    </view>
+  </view>
+</view>

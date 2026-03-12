@@ -1,0 +1,89 @@
+/* components/card-item/card-item.wxss */
+
+.card-item {
+  background-color: #FFFFFF;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-front {
+  margin-bottom: 16rpx;
+}
+
+.front-text {
+  font-size: 30rpx;
+  color: #333333;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.tag {
+  font-size: 22rpx;
+  color: #4A90D9;
+  background-color: #E8F2FC;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+}
+
+.card-status {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.card-progress {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8rpx;
+  background-color: #E8E8E8;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4A90D9;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 22rpx;
+  color: #666666;
+  min-width: 60rpx;
+}
+
+.card-actions {
+  position: absolute;
+  right: 24rpx;
+  top: 24rpx;
+}
+
+.action-btn {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.6;
+}
