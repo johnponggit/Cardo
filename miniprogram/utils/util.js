@@ -171,6 +171,19 @@ function isToday(date) {
 }
 
 /**
+ * 格式化日期为中文格式
+ */
+function formatChineseDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekday = weekdays[d.getDay()];
+  return `${year}年${month}月${day}日 周${weekday}`;
+}
+
+/**
  * 判断是否为昨天
  */
 function isYesterday(date) {
@@ -255,6 +268,7 @@ async function checkCloudEnv() {
 module.exports = {
   formatTime,
   formatRelativeTime,
+  formatChineseDate,
   debounce,
   throttle,
   isUrl,
