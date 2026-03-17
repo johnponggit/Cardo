@@ -1,21 +1,50 @@
-// utils/db.js - 云数据库封装
+// utils/db.js - 本地存储封装
 
-const db = wx.cloud.database();
-const _ = db.command;
-
-// 数据库集合名
-const COLLECTIONS = {
-  TODOS: 'todos',
-  CARDS: 'cards',
-  USERS: 'users'
+const STORAGE_KEYS = {
+  TODOS: 'cardo_todos',
+  CARDS: 'cardo_cards',
+  USER: 'cardo_user'
 };
 
 /**
- * 通用数据库操作类
+ * 生成唯一ID
  */
-class DB {
-  constructor(collection) {
-    this.collection = db.collection(collection);
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+/**
+ * 通用本地存储操作类
+ */
+class LocalDB {
+  constructor(storageKey) {
+    this.storageKey = storageKey;
+  }
+
+  /**
+   * 获取所有数据
+   */
+  getAll() {
+    try {
+      const data = wx.getStorageSync(this.storageKey);
+      return data || [];
+    } catch (err) {
+      console.error('读取数据失败:', err);
+      return [];
+    }
+  }
+
+  /**
+   * 保存所有数据
+   */
+  saveAll(data) {
+    try {
+      wx.setStorageSync(this.storageKey, data);
+      return true;
+    } catch (err) {
+      console.error('保存数据失败:', err);
+      return false;
+    }
   }
 
   /**
@@ -23,14 +52,17 @@ class DB {
    */
   async add(data) {
     try {
-      const res = await this.collection.add({
-        data: {
-          ...data,
-          createdAt: db.serverDate(),
-          updatedAt: db.serverDate()
-        }
-      });
-      return { success: true, data: res };
+      const list = this.getAll();
+      const now = new Date().toISOString();
+      const newItem = {
+        _id: generateId(),
+        ...data,
+        createdAt: now,
+        updatedAt: now
+      };
+      list.unshift(newItem);
+      this.saveAll(list);
+      return { success: true, data: newItem };
     } catch (err) {
       console.error('添加失败:', err);
       return { success: false, error: err };
@@ -42,8 +74,12 @@ class DB {
    */
   async getById(id) {
     try {
-      const res = await this.collection.doc(id).get();
-      return { success: true, data: res.data };
+      const list = this.getAll();
+      const item = list.find(item => item._id === id);
+      if (item) {
+        return { success: true, data: item };
+      }
+      return { success: false, error: '未找到' };
     } catch (err) {
       console.error('获取失败:', err);
       return { success: false, error: err };
@@ -51,31 +87,22 @@ class DB {
   }
 
   /**
-   * 获取用户的所有文档
+   * 获取列表
    */
   async getList(options = {}) {
     const {
-      where = {},
-      orderBy = 'createdAt',
-      order = 'desc',
-      limit = 20,
+      filter = () => true,
+      sort = (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       skip = 0,
-      field = {}
+      limit = 20
     } = options;
 
     try {
-      let query = this.collection
-        .where({ ...where })
-        .orderBy(orderBy, order)
-        .skip(skip)
-        .limit(limit);
-
-      if (Object.keys(field).length > 0) {
-        query = query.field(field);
-      }
-
-      const res = await query.get();
-      return { success: true, data: res.data };
+      let list = this.getAll();
+      list = list.filter(filter);
+      list.sort(sort);
+      const result = list.slice(skip, skip + limit);
+      return { success: true, data: result };
     } catch (err) {
       console.error('获取列表失败:', err);
       return { success: false, error: err };
@@ -87,13 +114,18 @@ class DB {
    */
   async update(id, data) {
     try {
-      const res = await this.collection.doc(id).update({
-        data: {
-          ...data,
-          updatedAt: db.serverDate()
-        }
-      });
-      return { success: true, data: res };
+      const list = this.getAll();
+      const index = list.findIndex(item => item._id === id);
+      if (index === -1) {
+        return { success: false, error: '未找到' };
+      }
+      list[index] = {
+        ...list[index],
+        ...data,
+        updatedAt: new Date().toISOString()
+      };
+      this.saveAll(list);
+      return { success: true, data: list[index] };
     } catch (err) {
       console.error('更新失败:', err);
       return { success: false, error: err };
@@ -105,8 +137,14 @@ class DB {
    */
   async remove(id) {
     try {
-      const res = await this.collection.doc(id).remove();
-      return { success: true, data: res };
+      const list = this.getAll();
+      const index = list.findIndex(item => item._id === id);
+      if (index === -1) {
+        return { success: false, error: '未找到' };
+      }
+      list.splice(index, 1);
+      this.saveAll(list);
+      return { success: true };
     } catch (err) {
       console.error('删除失败:', err);
       return { success: false, error: err };
@@ -116,10 +154,11 @@ class DB {
   /**
    * 统计数量
    */
-  async count(where = {}) {
+  async count(filter = () => true) {
     try {
-      const res = await this.collection.where(where).count();
-      return { success: true, data: res.total };
+      const list = this.getAll();
+      const count = list.filter(filter).length;
+      return { success: true, data: count };
     } catch (err) {
       console.error('统计失败:', err);
       return { success: false, error: err };
@@ -130,23 +169,31 @@ class DB {
 /**
  * 待办数据库操作
  */
-class TodoDB extends DB {
+class TodoDB extends LocalDB {
   constructor() {
-    super(COLLECTIONS.TODOS);
+    super(STORAGE_KEYS.TODOS);
   }
 
   /**
    * 获取待办列表
    */
   async getTodoList(status, category, skip = 0) {
-    const where = {};
-    if (status) where.status = status;
-    if (category) where.category = category;
+    const filter = (item) => {
+      if (status && item.status !== status) return false;
+      if (category && item.category !== category) return false;
+      return true;
+    };
 
     return this.getList({
-      where,
-      orderBy: 'createdAt',
-      order: 'desc',
+      filter,
+      sort: (a, b) => {
+        // 按优先级和创建时间排序
+        const priorityOrder = { 1: 0, 2: 1, 3: 2 };
+        const pa = priorityOrder[a.priority] ?? 1;
+        const pb = priorityOrder[b.priority] ?? 1;
+        if (pa !== pb) return pa - pb;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      },
       skip,
       limit: 20
     });
@@ -156,15 +203,14 @@ class TodoDB extends DB {
    * 获取今日待办
    */
   async getTodayTodos() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
     return this.getList({
-      where: {
-        status: _.in(['pending', 'doing'])
+      filter: item => item.status === 'pending' || item.status === 'doing',
+      sort: (a, b) => {
+        const priorityOrder = { 1: 0, 2: 1, 3: 2 };
+        const pa = priorityOrder[a.priority] ?? 1;
+        const pb = priorityOrder[b.priority] ?? 1;
+        return pa - pb;
       },
-      orderBy: 'priority',
-      order: 'desc',
       limit: 10
     });
   }
@@ -175,7 +221,7 @@ class TodoDB extends DB {
   async updateStatus(id, status) {
     const updateData = { status };
     if (status === 'done') {
-      updateData.completedAt = db.serverDate();
+      updateData.completedAt = new Date().toISOString();
     }
     return this.update(id, updateData);
   }
@@ -192,20 +238,18 @@ class TodoDB extends DB {
    */
   async getStats() {
     try {
-      const [pending, doing, done] = await Promise.all([
-        this.count({ status: 'pending' }),
-        this.count({ status: 'doing' }),
-        this.count({ status: 'done' })
-      ]);
-
-      return {
-        success: true,
-        data: {
-          pending: pending.data || 0,
-          doing: doing.data || 0,
-          done: done.data || 0
-        }
+      const list = this.getAll();
+      const stats = {
+        pending: 0,
+        doing: 0,
+        done: 0
       };
+      list.forEach(item => {
+        if (item.status === 'pending') stats.pending++;
+        else if (item.status === 'doing') stats.doing++;
+        else if (item.status === 'done') stats.done++;
+      });
+      return { success: true, data: stats };
     } catch (err) {
       return { success: false, error: err };
     }
@@ -215,9 +259,9 @@ class TodoDB extends DB {
 /**
  * 卡片数据库操作
  */
-class CardDB extends DB {
+class CardDB extends LocalDB {
   constructor() {
-    super(COLLECTIONS.CARDS);
+    super(STORAGE_KEYS.CARDS);
   }
 
   /**
@@ -226,11 +270,11 @@ class CardDB extends DB {
   async getTodayReviewCards() {
     const now = new Date();
     return this.getList({
-      where: {
-        nextReview: _.lte(now)
+      filter: item => {
+        if (!item.nextReview) return true;
+        return new Date(item.nextReview) <= now;
       },
-      orderBy: 'nextReview',
-      order: 'asc',
+      sort: (a, b) => new Date(a.nextReview || 0) - new Date(b.nextReview || 0),
       limit: 50
     });
   }
@@ -239,13 +283,14 @@ class CardDB extends DB {
    * 获取卡片列表
    */
   async getCardList(tag, skip = 0) {
-    const where = {};
-    if (tag) where.tags = _.all([tag]);
+    const filter = (item) => {
+      if (tag && (!item.tags || !item.tags.includes(tag))) return false;
+      return true;
+    };
 
     return this.getList({
-      where,
-      orderBy: 'updatedAt',
-      order: 'desc',
+      filter,
+      sort: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
       skip,
       limit: 20
     });
@@ -255,7 +300,6 @@ class CardDB extends DB {
    * 更新复习记录
    */
   async updateReview(id, quality) {
-    // 先获取卡片信息
     const cardRes = await this.getById(id);
     if (!cardRes.success) return cardRes;
 
@@ -274,7 +318,7 @@ class CardDB extends DB {
       interval: nextInterval,
       easeFactor,
       repetitions,
-      nextReview
+      nextReview: nextReview.toISOString()
     });
   }
 
@@ -318,7 +362,6 @@ class CardDB extends DB {
    * 从待办创建卡片
    */
   async createFromTodo(todoId, front, back, tags = []) {
-    const now = new Date();
     const nextReview = new Date();
     nextReview.setDate(nextReview.getDate() + 1);
 
@@ -330,7 +373,7 @@ class CardDB extends DB {
       easeFactor: 2.5,
       interval: 0,
       repetitions: 0,
-      nextReview
+      nextReview: nextReview.toISOString()
     });
   }
 
@@ -339,17 +382,13 @@ class CardDB extends DB {
    */
   async getAllTags() {
     try {
-      const res = await this.collection
-        .field({ tags: true })
-        .get();
-
+      const list = this.getAll();
       const tagsSet = new Set();
-      res.data.forEach(item => {
+      list.forEach(item => {
         if (item.tags && Array.isArray(item.tags)) {
           item.tags.forEach(tag => tagsSet.add(tag));
         }
       });
-
       return { success: true, data: Array.from(tagsSet) };
     } catch (err) {
       return { success: false, error: err };
@@ -361,21 +400,22 @@ class CardDB extends DB {
    */
   async getStats() {
     try {
+      const list = this.getAll();
       const now = new Date();
-      const [total, dueToday, newCards] = await Promise.all([
-        this.count(),
-        this.count({ nextReview: _.lte(now) }),
-        this.count({ repetitions: 0 })
-      ]);
-
-      return {
-        success: true,
-        data: {
-          total: total.data || 0,
-          dueToday: dueToday.data || 0,
-          newCards: newCards.data || 0
-        }
+      const stats = {
+        total: list.length,
+        dueToday: 0,
+        newCards: 0
       };
+      list.forEach(item => {
+        if (!item.nextReview || new Date(item.nextReview) <= now) {
+          stats.dueToday++;
+        }
+        if (!item.repetitions || item.repetitions === 0) {
+          stats.newCards++;
+        }
+      });
+      return { success: true, data: stats };
     } catch (err) {
       return { success: false, error: err };
     }
@@ -387,10 +427,8 @@ const todoDB = new TodoDB();
 const cardDB = new CardDB();
 
 module.exports = {
-  db,
-  _,
-  COLLECTIONS,
-  DB,
+  STORAGE_KEYS,
+  LocalDB,
   TodoDB,
   CardDB,
   todoDB,

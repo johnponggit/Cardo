@@ -11,7 +11,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#4A90D9",
-    "navigationBarTitleText": "待办记忆",
+    "navigationBarTitleText": "卡卡待办",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
@@ -46,7 +46,6 @@
       }
     ]
   },
-  "cloud": true,
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

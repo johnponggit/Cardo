@@ -9,7 +9,9 @@
         name="title"
         value="{{todo.title}}"
         placeholder="请输入待办标题"
+        placeholder-style="color: #999999;"
         maxlength="100"
+        confirm-type="done"
         bindinput="onTitleInput" />
     </view>
 
@@ -18,10 +20,11 @@
       <view class="form-label">链接</view>
       <view class="link-input">
         <input
-          class="input flex-1"
+          class="input link-input-field"
           name="link"
           value="{{todo.link}}"
           placeholder="粘贴链接（可选）"
+          placeholder-style="color: #999999;"
           bindblur="onLinkBlur" />
         <button class="btn-paste" bindtap="onPaste" size="mini">粘贴</button>
       </view>
@@ -116,6 +119,7 @@
         name="notes"
         value="{{todo.notes}}"
         placeholder="添加备注信息..."
+        placeholder-style="color: #999999;"
         maxlength="500"
         auto-height />
     </view>

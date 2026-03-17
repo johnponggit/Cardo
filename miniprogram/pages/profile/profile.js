@@ -1,5 +1,5 @@
 // pages/profile/profile.js
-const { todoDB, cardDB } = require('../../utils/db.js');
+const { todoDB, cardDB, STORAGE_KEYS } = require('../../utils/db.js');
 const util = require('../../utils/util.js');
 
 const app = getApp();
@@ -7,18 +7,16 @@ const app = getApp();
 Page({
   data: {
     userInfo: null,
-    openid: '',
     stats: {
       totalTodos: 0,
-      totalCards: 0,
-      reviewDays: 0
+      totalCards: 0
     },
     reminderEnabled: false,
     darkMode: false
   },
 
   onLoad() {
-    this.checkLogin();
+    this.loadUserInfo();
     this.loadStats();
     this.loadSettings();
   },
@@ -27,23 +25,7 @@ Page({
     this.loadStats();
   },
 
-  async checkLogin() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'login'
-      });
-
-      if (res.result && res.result.openid) {
-        this.setData({
-          openid: res.result.openid.substring(0, 8) + '...'
-        });
-        app.globalData.openid = res.result.openid;
-      }
-    } catch (err) {
-      console.error('检查登录状态失败:', err);
-    }
-
-    // 检查本地用户信息
+  loadUserInfo() {
     const userInfo = wx.getStorageSync('userInfo');
     if (userInfo) {
       this.setData({ userInfo });
@@ -93,32 +75,44 @@ Page({
     }
   },
 
+  onLogout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({ userInfo: null });
+          wx.removeStorageSync('userInfo');
+          app.globalData.userInfo = null;
+          util.showSuccess('已退出登录');
+        }
+      }
+    });
+  },
+
   async onExport() {
     util.showLoading('导出中...');
 
     try {
-      const [todoRes, cardRes] = await Promise.all([
-        todoDB.getList({ limit: 1000 }),
-        cardDB.getList({ limit: 1000 })
-      ]);
+      const todos = todoDB.getAll();
+      const cards = cardDB.getAll();
 
       const data = {
-        todos: todoRes.data || [],
-        cards: cardRes.data || [],
+        todos,
+        cards,
         exportTime: new Date().toISOString()
       };
 
-      // 保存到本地
-      wx.setStorageSync('exportData', JSON.stringify(data));
+      // 保存到剪贴板
+      const dataStr = JSON.stringify(data, null, 2);
+
+      await wx.setClipboardData({
+        data: dataStr
+      });
 
       util.hideLoading();
-      util.showSuccess('导出成功');
+      util.showSuccess('已复制到剪贴板');
 
-      wx.showModal({
-        title: '导出成功',
-        content: '数据已保存到本地，可通过文件管理器查看',
-        showCancel: false
-      });
     } catch (err) {
       util.hideLoading();
       console.error('导出失败:', err);
@@ -129,40 +123,93 @@ Page({
   onImport() {
     wx.showModal({
       title: '导入数据',
-      content: '确定要导入数据吗？这将覆盖当前数据。',
+      content: '请先复制JSON数据到剪贴板，然后点击确定导入。这将合并现有数据。',
       success: async (res) => {
         if (res.confirm) {
           try {
-            const dataStr = wx.getStorageSync('exportData');
+            const clipboardData = await wx.getClipboardData();
+            const dataStr = clipboardData.data;
+
             if (!dataStr) {
-              util.showError('没有找到备份数据');
+              util.showError('剪贴板为空');
               return;
             }
 
             const data = JSON.parse(dataStr);
-            util.showLoading('导入中...');
 
-            // 导入待办
-            if (data.todos && data.todos.length > 0) {
-              for (const todo of data.todos) {
-                await todoDB.add(todo);
-              }
+            if (!data.todos && !data.cards) {
+              util.showError('数据格式错误');
+              return;
             }
 
-            // 导入卡片
-            if (data.cards && data.cards.length > 0) {
-              for (const card of data.cards) {
-                await cardDB.add(card);
-              }
+            util.showLoading('导入中...');
+
+            // 获取现有数据
+            let existingTodos = todoDB.getAll();
+            let existingCards = cardDB.getAll();
+
+            // 创建ID映射，避免重复
+            const existingTodoIds = new Set(existingTodos.map(t => t._id));
+            const existingCardIds = new Set(existingCards.map(c => c._id));
+
+            // 合并待办
+            let newTodos = [];
+            if (data.todos && Array.isArray(data.todos)) {
+              newTodos = data.todos.filter(t => !existingTodoIds.has(t._id));
+            }
+
+            // 合并卡片
+            let newCards = [];
+            if (data.cards && Array.isArray(data.cards)) {
+              newCards = data.cards.filter(c => !existingCardIds.has(c._id));
+            }
+
+            // 保存合并后的数据
+            if (newTodos.length > 0) {
+              todoDB.saveAll([...newTodos, ...existingTodos]);
+            }
+            if (newCards.length > 0) {
+              cardDB.saveAll([...newCards, ...existingCards]);
             }
 
             util.hideLoading();
-            util.showSuccess('导入成功');
+
+            const addedTodos = newTodos.length;
+            const addedCards = newCards.length;
+
+            wx.showModal({
+              title: '导入成功',
+              content: `新增 ${addedTodos} 条待办，${addedCards} 张卡片`,
+              showCancel: false
+            });
+
             this.loadStats();
+
           } catch (err) {
             util.hideLoading();
             console.error('导入失败:', err);
-            util.showError('导入失败');
+            util.showError('导入失败，请检查数据格式');
+          }
+        }
+      }
+    });
+  },
+
+  onClearData() {
+    wx.showModal({
+      title: '清空数据',
+      content: '确定要清空所有数据吗？此操作不可恢复！',
+      confirmColor: '#FF4D4F',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.removeStorageSync(STORAGE_KEYS.TODOS);
+            wx.removeStorageSync(STORAGE_KEYS.CARDS);
+            util.showSuccess('数据已清空');
+            this.loadStats();
+          } catch (err) {
+            console.error('清空失败:', err);
+            util.showError('操作失败');
           }
         }
       }
@@ -173,20 +220,7 @@ Page({
     const enabled = e.detail.value;
     this.setData({ reminderEnabled: enabled });
     wx.setStorageSync('reminderEnabled', enabled);
-
-    if (enabled) {
-      // 请求订阅消息权限
-      wx.requestSubscribeMessage({
-        tmplIds: ['your-template-id'], // 替换为你的模板ID
-        success: () => {
-          util.showSuccess('已开启提醒');
-        },
-        fail: () => {
-          this.setData({ reminderEnabled: false });
-          wx.setStorageSync('reminderEnabled', false);
-        }
-      });
-    }
+    util.showSuccess(enabled ? '已开启提醒' : '已关闭提醒');
   },
 
   onThemeChange(e) {
@@ -196,24 +230,10 @@ Page({
     util.showSuccess(enabled ? '已开启深色模式' : '已关闭深色模式');
   },
 
-  onReminder() {
-    // 打开提醒设置
-  },
-
-  onTheme() {
-    // 切换主题
-  },
-
-  onFeedback() {
-    wx.navigateTo({
-      url: '/pages/feedback/feedback'
-    });
-  },
-
   onAbout() {
     wx.showModal({
-      title: '关于待办记忆',
-      content: '待办记忆是一款帮助你管理待办事项和知识复习的小程序。\n\n版本：1.0.0\n开发者：Cardo Team',
+      title: '关于卡卡待办',
+      content: '卡卡待办是一款帮助你管理待办事项和知识复习的小程序。\n\n版本：1.0.0\n数据存储：本地存储',
       showCancel: false
     });
   }

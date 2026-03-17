@@ -49,7 +49,5 @@
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  },
-  "cloudfunctionTemplateRoot": "cloudfunctions/",
-  "cloudbaseRoot": "cloudbaserc.json"
+  }
 }

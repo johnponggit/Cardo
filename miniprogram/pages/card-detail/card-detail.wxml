@@ -9,6 +9,7 @@
         name="front"
         value="{{card.front}}"
         placeholder="输入问题或知识点..."
+        placeholder-style="color: #999999;"
         maxlength="1000"
         auto-height />
     </view>
@@ -21,6 +22,7 @@
         name="back"
         value="{{card.back}}"
         placeholder="输入答案或详细说明..."
+        placeholder-style="color: #999999;"
         maxlength="2000"
         auto-height />
     </view>
@@ -38,6 +40,8 @@
         <input
           class="tag-input"
           placeholder="输入标签后回车"
+          placeholder-style="color: #999999;"
+          confirm-type="done"
           value="{{tagInput}}"
           bindinput="onTagInput"
           bindconfirm="onAddTag" />

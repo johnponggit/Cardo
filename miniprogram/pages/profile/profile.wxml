@@ -6,14 +6,15 @@
       <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
       <view class="user-text">
         <text class="nickname">{{userInfo.nickName || '未设置昵称'}}</text>
-        <text class="user-id">ID: {{openid || '未登录'}}</text>
+        <text class="user-id">本地存储模式</text>
       </view>
+      <button class="logout-btn" size="mini" bindtap="onLogout">退出</button>
     </view>
     <view class="user-info" wx:else bindtap="onLogin">
       <image class="avatar" src="/images/default-avatar.png" mode="aspectFill" />
       <view class="user-text">
         <text class="nickname">点击登录</text>
-        <text class="user-id">登录后同步数据</text>
+        <text class="user-id">获取头像昵称</text>
       </view>
     </view>
   </view>
@@ -29,11 +30,6 @@
       <view class="stats-item">
         <text class="stats-value">{{stats.totalCards}}</text>
         <text class="stats-label">卡片总数</text>
-      </view>
-      <view class="stats-divider"></view>
-      <view class="stats-item">
-        <text class="stats-value">{{stats.reviewDays}}</text>
-        <text class="stats-label">复习天数</text>
       </view>
     </view>
   </view>
@@ -51,15 +47,20 @@
         <text class="menu-text">导入数据</text>
         <image src="/images/arrow-right.png" class="menu-arrow" mode="aspectFit" />
       </view>
+      <view class="menu-item" bindtap="onClearData">
+        <image src="/images/delete.png" class="menu-icon" mode="aspectFit" />
+        <text class="menu-text danger">清空数据</text>
+        <image src="/images/arrow-right.png" class="menu-arrow" mode="aspectFit" />
+      </view>
     </view>
 
     <view class="menu-group">
-      <view class="menu-item" bindtap="onReminder">
+      <view class="menu-item">
         <image src="/images/reminder.png" class="menu-icon" mode="aspectFit" />
         <text class="menu-text">复习提醒</text>
         <switch checked="{{reminderEnabled}}" bindchange="onReminderChange" />
       </view>
-      <view class="menu-item" bindtap="onTheme">
+      <view class="menu-item">
         <image src="/images/theme.png" class="menu-icon" mode="aspectFit" />
         <text class="menu-text">深色模式</text>
         <switch checked="{{darkMode}}" bindchange="onThemeChange" />
@@ -67,11 +68,6 @@
     </view>
 
     <view class="menu-group">
-      <view class="menu-item" bindtap="onFeedback">
-        <image src="/images/feedback.png" class="menu-icon" mode="aspectFit" />
-        <text class="menu-text">意见反馈</text>
-        <image src="/images/arrow-right.png" class="menu-arrow" mode="aspectFit" />
-      </view>
       <view class="menu-item" bindtap="onAbout">
         <image src="/images/about.png" class="menu-icon" mode="aspectFit" />
         <text class="menu-text">关于我们</text>
@@ -82,6 +78,6 @@
 
   <!-- 版本信息 -->
   <view class="version">
-    <text>版本 1.0.0</text>
+    <text>版本 1.0.0 · 本地存储</text>
   </view>
 </view>

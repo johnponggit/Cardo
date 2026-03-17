@@ -250,21 +250,6 @@ function showConfirm(title, content) {
   });
 }
 
-/**
- * 检查云开发环境
- */
-async function checkCloudEnv() {
-  try {
-    const res = await wx.cloud.callFunction({
-      name: 'login'
-    });
-    return !!res.result.openid;
-  } catch (err) {
-    console.error('云开发环境检查失败:', err);
-    return false;
-  }
-}
-
 module.exports = {
   formatTime,
   formatRelativeTime,
@@ -285,6 +270,5 @@ module.exports = {
   hideLoading,
   showSuccess,
   showError,
-  showConfirm,
-  checkCloudEnv
+  showConfirm
 };
