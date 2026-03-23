@@ -1,4 +1,4 @@
-/* components/review-card/review-card.wxss */
+/* components/review-card/review-card.wxss 玻璃拟态风格 */
 
 .review-card {
   position: relative;
@@ -7,11 +7,14 @@
 }
 
 .card-face {
-  background-color: #FFFFFF;
-  border-radius: 24rpx;
-  padding: 40rpx;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border-radius: 32rpx;
+  padding: 48rpx;
   min-height: 400rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12rpx 40rpx rgba(31, 38, 135, 0.15);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
   transition: all 0.6s ease;
@@ -20,11 +23,11 @@
 }
 
 .card-face.front {
-  background: linear-gradient(135deg, #4A90D9 0%, #357ABD 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
 }
 
 .card-face.back {
-  background: linear-gradient(135deg, #52C41A 0%, #3DA31A 100%);
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.9) 0%, rgba(0, 206, 201, 0.9) 100%);
   position: absolute;
   top: 0;
   left: 0;
@@ -47,15 +50,18 @@
 
 .card-label {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 8rpx 16rpx;
-  border-radius: 20rpx;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10rpx);
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+  font-weight: 500;
 }
 
 .card-count {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
 }
 
 .card-body {
@@ -72,6 +78,8 @@
   line-height: 1.6;
   text-align: center;
   word-break: break-all;
+  font-weight: 500;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .card-footer {
@@ -80,7 +88,8 @@
 
 .hint {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 .rating-buttons {
@@ -105,9 +114,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20rpx 12rpx;
-  border-radius: 16rpx;
+  padding: 24rpx 12rpx;
+  border-radius: 20rpx;
   transition: all 0.2s ease;
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
 }
 
 .rating-btn:active {
@@ -115,48 +126,49 @@
 }
 
 .rating-btn.fail {
-  background-color: #FFF1F0;
-  border: 2rpx solid #FFA39E;
+  background: rgba(225, 112, 85, 0.2);
+  border: 2rpx solid rgba(225, 112, 85, 0.4);
 }
 
 .rating-btn.fail .rating-label {
-  color: #FF4D4F;
+  color: #E17055;
 }
 
 .rating-btn.hard {
-  background-color: #FFF7E6;
-  border: 2rpx solid #FFD591;
+  background: rgba(253, 203, 110, 0.2);
+  border: 2rpx solid rgba(253, 203, 110, 0.4);
 }
 
 .rating-btn.hard .rating-label {
-  color: #FA8C16;
+  color: #F39C12;
 }
 
 .rating-btn.good {
-  background-color: #E6F7FF;
-  border: 2rpx solid #91D5FF;
+  background: rgba(102, 126, 234, 0.2);
+  border: 2rpx solid rgba(102, 126, 234, 0.4);
 }
 
 .rating-btn.good .rating-label {
-  color: #1890FF;
+  color: #6C5CE7;
 }
 
 .rating-btn.easy {
-  background-color: #F6FFED;
-  border: 2rpx solid #B7EB8F;
+  background: rgba(0, 184, 148, 0.2);
+  border: 2rpx solid rgba(0, 184, 148, 0.4);
 }
 
 .rating-btn.easy .rating-label {
-  color: #52C41A;
+  color: #00B894;
 }
 
 .rating-label {
   font-size: 28rpx;
-  font-weight: 500;
-  margin-bottom: 4rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
 }
 
 .rating-desc {
   font-size: 20rpx;
-  color: #999999;
+  color: #636E72;
+  font-weight: 500;
 }
